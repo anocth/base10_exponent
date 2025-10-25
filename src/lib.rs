@@ -198,6 +198,7 @@ fn subnormal_exponent_f32(bits: u32) -> i32 {
     ((true_exp2 as f32) * <f32 as FloatOps>::LOG10_2).round() as i32
 }
 
+#[inline(always)]
 fn exp10_f64(x: f64) -> i32 {
     let ax = x.abs();
     if ax == 0.0 || !ax.is_finite() {
@@ -222,6 +223,7 @@ fn exp10_f64(x: f64) -> i32 {
     e10
 }
 
+#[inline(always)]
 fn exp10_f32(x: f32) -> i32 {
     let ax = x.abs();
     if ax == 0.0 || !ax.is_finite() {
@@ -247,6 +249,7 @@ fn exp10_f32(x: f32) -> i32 {
 }
 
 #[must_use]
+#[inline(always)]
 pub fn exp10<F: FloatOps + 'static>(x: F) -> i32 {
     if TypeId::of::<F>() == TypeId::of::<f64>() {
         let x_f64 = unsafe { std::mem::transmute_copy::<F, f64>(&x) };
@@ -258,6 +261,7 @@ pub fn exp10<F: FloatOps + 'static>(x: F) -> i32 {
 }
 
 #[must_use]
+#[inline(always)]
 pub fn exp10_digits<F: FloatOps + 'static>(x: F) -> u32 {
     let ax = x.abs();
     if ax == F::from_bits(F::default_bits()) || !ax.is_finite() {
@@ -267,6 +271,7 @@ pub fn exp10_digits<F: FloatOps + 'static>(x: F) -> u32 {
 }
 
 #[must_use]
+#[inline(always)]
 pub fn exp10_with_digits<F: FloatOps + 'static>(x: F) -> (i32, u32) {
     let ax = x.abs();
     if ax == F::from_bits(F::default_bits()) || !ax.is_finite() {
