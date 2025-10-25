@@ -2,6 +2,10 @@
 name = "base10_exponent"
 version = "0.1.0"
 edition = "2024"
+description = "A Rust library for computing the base-10 exponent and digit count of floating-point numbers (f32 and f64)."
+license = "MIT"
+keywords = ["floating-point", "exponent", "math", "fast"]
+categories = ["algorithms", "mathematics"]
 
 [dependencies]
 
