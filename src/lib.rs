@@ -1,4 +1,3 @@
-use num_traits::Float as NumFloat;
 use std::any::TypeId;
 use std::sync::LazyLock;
 
@@ -58,7 +57,7 @@ impl FloatOps for f64 {
         self.is_finite()
     }
     fn ilog2(self) -> i32 {
-        NumFloat::log2(self).floor() as i32
+        self.log2().floor() as i32
     }
     fn bits_ilog2(bits: u64) -> u32 {
         bits.ilog2()
@@ -99,7 +98,7 @@ impl FloatOps for f32 {
         self.is_finite()
     }
     fn ilog2(self) -> i32 {
-        NumFloat::log2(self).floor() as i32
+        self.log2().floor() as i32
     }
     fn bits_ilog2(bits: u32) -> u32 {
         bits.ilog2()
