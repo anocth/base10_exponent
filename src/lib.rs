@@ -1,6 +1,6 @@
 use num_traits::Float as NumFloat;
-use once_cell::sync::Lazy;
 use std::any::TypeId;
+use std::sync::LazyLock;
 
 // Trait defining common operations for floating-point types
 pub trait FloatOps: PartialEq + Copy {
@@ -109,31 +109,33 @@ impl FloatOps for f32 {
     }
 }
 
-static EXP10_DIGITS_F64: Lazy<[u32; <f64 as FloatOps>::MAX_EXP10_ABS + 1]> = Lazy::new(|| {
-    let mut arr = [0u32; <f64 as FloatOps>::MAX_EXP10_ABS + 1];
-    for i in 0..=<f64 as FloatOps>::MAX_EXP10_ABS {
-        arr[i] = if i == 0 {
-            1
-        } else {
-            (i as f64).log10().floor() as u32 + 1
-        };
-    }
-    arr
-});
+static EXP10_DIGITS_F64: LazyLock<[u32; <f64 as FloatOps>::MAX_EXP10_ABS + 1]> =
+    LazyLock::new(|| {
+        let mut arr = [0u32; <f64 as FloatOps>::MAX_EXP10_ABS + 1];
+        for i in 0..=<f64 as FloatOps>::MAX_EXP10_ABS {
+            arr[i] = if i == 0 {
+                1
+            } else {
+                (i as f64).log10().floor() as u32 + 1
+            };
+        }
+        arr
+    });
 
-static EXP10_DIGITS_F32: Lazy<[u32; <f32 as FloatOps>::MAX_EXP10_ABS + 1]> = Lazy::new(|| {
-    let mut arr = [0u32; <f32 as FloatOps>::MAX_EXP10_ABS + 1];
-    for i in 0..=<f32 as FloatOps>::MAX_EXP10_ABS {
-        arr[i] = if i == 0 {
-            1
-        } else {
-            (i as f64).log10().floor() as u32 + 1
-        };
-    }
-    arr
-});
+static EXP10_DIGITS_F32: LazyLock<[u32; <f32 as FloatOps>::MAX_EXP10_ABS + 1]> =
+    LazyLock::new(|| {
+        let mut arr = [0u32; <f32 as FloatOps>::MAX_EXP10_ABS + 1];
+        for i in 0..=<f32 as FloatOps>::MAX_EXP10_ABS {
+            arr[i] = if i == 0 {
+                1
+            } else {
+                (i as f64).log10().floor() as u32 + 1
+            };
+        }
+        arr
+    });
 
-static EXP2_TO_EXP10_F64: Lazy<[i32; <f64 as FloatOps>::EXP_BITS_MASK]> = Lazy::new(|| {
+static EXP2_TO_EXP10_F64: LazyLock<[i32; <f64 as FloatOps>::EXP_BITS_MASK]> = LazyLock::new(|| {
     let mut arr = [0i32; <f64 as FloatOps>::EXP_BITS_MASK];
     for i in 0..<f64 as FloatOps>::EXP_BITS_MASK {
         let exp2 = i as i32 - <f64 as FloatOps>::EXP_BIAS;
@@ -142,7 +144,7 @@ static EXP2_TO_EXP10_F64: Lazy<[i32; <f64 as FloatOps>::EXP_BITS_MASK]> = Lazy::
     arr
 });
 
-static EXP2_TO_EXP10_F32: Lazy<[i32; <f32 as FloatOps>::EXP_BITS_MASK]> = Lazy::new(|| {
+static EXP2_TO_EXP10_F32: LazyLock<[i32; <f32 as FloatOps>::EXP_BITS_MASK]> = LazyLock::new(|| {
     let mut arr = [0i32; <f32 as FloatOps>::EXP_BITS_MASK];
     for i in 0..<f32 as FloatOps>::EXP_BITS_MASK {
         let exp2 = i as i32 - <f32 as FloatOps>::EXP_BIAS;
@@ -151,7 +153,7 @@ static EXP2_TO_EXP10_F32: Lazy<[i32; <f32 as FloatOps>::EXP_BITS_MASK]> = Lazy::
     arr
 });
 
-static POW10_F64: Lazy<[f64; <f64 as FloatOps>::POW10_RANGE]> = Lazy::new(|| {
+static POW10_F64: LazyLock<[f64; <f64 as FloatOps>::POW10_RANGE]> = LazyLock::new(|| {
     let mut arr = [0f64; <f64 as FloatOps>::POW10_RANGE];
     for (i, e) in (<f64 as FloatOps>::POW10_MIN..=<f64 as FloatOps>::POW10_MAX).enumerate() {
         arr[i] = 10f64.powi(e);
@@ -159,7 +161,7 @@ static POW10_F64: Lazy<[f64; <f64 as FloatOps>::POW10_RANGE]> = Lazy::new(|| {
     arr
 });
 
-static POW10_F32: Lazy<[f32; <f32 as FloatOps>::POW10_RANGE]> = Lazy::new(|| {
+static POW10_F32: LazyLock<[f32; <f32 as FloatOps>::POW10_RANGE]> = LazyLock::new(|| {
     let mut arr = [0f32; <f32 as FloatOps>::POW10_RANGE];
     for (i, e) in (<f32 as FloatOps>::POW10_MIN..=<f32 as FloatOps>::POW10_MAX).enumerate() {
         arr[i] = 10f32.powi(e);
