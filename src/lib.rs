@@ -35,7 +35,7 @@ impl FloatOps for f64 {
     const POW10_MIN: i32 = -324;
     const POW10_MAX: i32 = 308;
     const POW10_RANGE: usize = (Self::POW10_MAX - Self::POW10_MIN + 1) as usize;
-    const MAX_EXP10_ABS: usize = Self::POW10_MIN.abs() as usize;
+    const MAX_EXP10_ABS: usize = Self::POW10_MIN.unsigned_abs() as usize;
     const EXP_BITS_MASK: usize = 0x7ff;
     const MANTISSA_MASK: u64 = (1u64 << 52) - 1;
     const EXP_BIAS: i32 = 1023;
@@ -76,7 +76,7 @@ impl FloatOps for f32 {
     const POW10_MIN: i32 = -45;
     const POW10_MAX: i32 = 38;
     const POW10_RANGE: usize = (Self::POW10_MAX - Self::POW10_MIN + 1) as usize;
-    const MAX_EXP10_ABS: usize = Self::POW10_MIN.abs() as usize;
+    const MAX_EXP10_ABS: usize = Self::POW10_MIN.unsigned_abs() as usize;
     const EXP_BITS_MASK: usize = 0xff;
     const MANTISSA_MASK: u32 = (1u32 << 23) - 1;
     const EXP_BIAS: i32 = 127;
@@ -112,8 +112,8 @@ impl FloatOps for f32 {
 static EXP10_DIGITS_F64: LazyLock<[u32; <f64 as FloatOps>::MAX_EXP10_ABS + 1]> =
     LazyLock::new(|| {
         let mut arr = [0u32; <f64 as FloatOps>::MAX_EXP10_ABS + 1];
-        for i in 0..=<f64 as FloatOps>::MAX_EXP10_ABS {
-            arr[i] = if i == 0 {
+        for (i, item) in arr.iter_mut().enumerate() {
+            *item = if i == 0 {
                 1
             } else {
                 (i as f64).log10().floor() as u32 + 1
@@ -125,8 +125,8 @@ static EXP10_DIGITS_F64: LazyLock<[u32; <f64 as FloatOps>::MAX_EXP10_ABS + 1]> =
 static EXP10_DIGITS_F32: LazyLock<[u32; <f32 as FloatOps>::MAX_EXP10_ABS + 1]> =
     LazyLock::new(|| {
         let mut arr = [0u32; <f32 as FloatOps>::MAX_EXP10_ABS + 1];
-        for i in 0..=<f32 as FloatOps>::MAX_EXP10_ABS {
-            arr[i] = if i == 0 {
+        for (i, item) in arr.iter_mut().enumerate() {
+            *item = if i == 0 {
                 1
             } else {
                 (i as f64).log10().floor() as u32 + 1
@@ -137,18 +137,18 @@ static EXP10_DIGITS_F32: LazyLock<[u32; <f32 as FloatOps>::MAX_EXP10_ABS + 1]> =
 
 static EXP2_TO_EXP10_F64: LazyLock<[i32; <f64 as FloatOps>::EXP_BITS_MASK]> = LazyLock::new(|| {
     let mut arr = [0i32; <f64 as FloatOps>::EXP_BITS_MASK];
-    for i in 0..<f64 as FloatOps>::EXP_BITS_MASK {
+    for (i, item) in arr.iter_mut().enumerate() {
         let exp2 = i as i32 - <f64 as FloatOps>::EXP_BIAS;
-        arr[i] = ((exp2 as f64) * <f64 as FloatOps>::LOG10_2).round() as i32;
+        *item = ((exp2 as f64) * <f64 as FloatOps>::LOG10_2).round() as i32;
     }
     arr
 });
 
 static EXP2_TO_EXP10_F32: LazyLock<[i32; <f32 as FloatOps>::EXP_BITS_MASK]> = LazyLock::new(|| {
     let mut arr = [0i32; <f32 as FloatOps>::EXP_BITS_MASK];
-    for i in 0..<f32 as FloatOps>::EXP_BITS_MASK {
+    for (i, item) in arr.iter_mut().enumerate() {
         let exp2 = i as i32 - <f32 as FloatOps>::EXP_BIAS;
-        arr[i] = ((exp2 as f32) * <f32 as FloatOps>::LOG10_2).round() as i32;
+        *item = ((exp2 as f32) * <f32 as FloatOps>::LOG10_2).round() as i32;
     }
     arr
 });
@@ -178,7 +178,7 @@ fn exp10_digit_table<F: FloatOps + 'static>() -> &'static [u32] {
 }
 
 fn exponent_digit_count<F: FloatOps + 'static>(e10: i32) -> u32 {
-    exp10_digit_table::<F>()[e10.abs() as usize]
+    exp10_digit_table::<F>()[e10.unsigned_abs() as usize]
 }
 
 #[cold]
